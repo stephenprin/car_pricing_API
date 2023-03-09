@@ -7,8 +7,5 @@ export class ReportEntity {
     id: number;
 
     @Column()
-    name: string;
-
-    @Column()
-    email: string;
+    price: number;
 }
