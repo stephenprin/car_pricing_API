@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post, Query ,UseInterceptors, ClassSerializerInterceptor} from '@nestjs/common';
+import { Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post, Query, Session} from '@nestjs/common';
 import { Serialize, SerializeInterceptor } from 'src/interceptors/serialize.interceptor';
 import { UpdateUserDto } from 'src/users/dtos/update-user.dto';
 import { UserDto } from 'src/users/dtos/user.dto';
@@ -15,15 +15,25 @@ export class UserController {
         private userService: UserService,
         private userAuth: AuthService
     ) { }
+
+    @Get('/who')
+    whoami(@Session() session:any) {
+        return this.userService.findUser(session.userId)
+     }   
+        
     @Post('/signup')
-    createUser(@Body() body: CreateUserDto) {
-        return this.userAuth.signupValidate(body.email, body.password);
+    async createUser(@Body() body: CreateUserDto, @Session() session: any) {
+        const user = await this.userAuth.signupValidate(body.email, body.password);
+        session.userId = user.id;
+        return user;
         
     }
 
     @Post('/signin')
-    signin(@Body() body: CreateUserDto) { 
-        return this.userAuth.signinValidate(body.email, body.password)
+    async signin(@Body() body: CreateUserDto, @Session() session: any) { 
+        const user = await this.userAuth.signinValidate(body.email, body.password)
+        session.userId = user.id;
+        return user;
     }
    
    
