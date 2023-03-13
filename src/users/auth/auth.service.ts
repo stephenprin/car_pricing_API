@@ -26,4 +26,17 @@ export class AuthService {
         const newUser = await this.userService.create(email, result);
         
     }
+
+    async signinValidate(email: string, password: string) { 
+        const [user] = await this.userService.findUsersEmail(email);
+        if (!user) { 
+            throw new BadRequestException('Invalid email');
+        }
+        const [salt, storedHash] = user.password.split('.');
+        const hash = await scryptAsync(password, salt, 32) as Buffer;
+        if (storedHash !==hash.toString('hex')) { 
+            throw new BadRequestException('Invalid password');
+        }
+        return user;
+    }
 }

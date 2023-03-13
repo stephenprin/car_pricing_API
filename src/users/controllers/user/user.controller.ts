@@ -20,6 +20,11 @@ export class UserController {
         return this.userAuth.signupValidate(body.email, body.password);
         
     }
+
+    @Post('/signin')
+    signin(@Body() body: CreateUserDto) { 
+        return this.userAuth.signinValidate(body.email, body.password)
+    }
    
    
     @Get("/user/:id")
